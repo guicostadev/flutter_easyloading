@@ -226,6 +226,7 @@ class EasyLoading {
       vertical: 15.0,
       horizontal: 20.0,
     );
+    counter = 0;
   }
 
   static EasyLoading get instance => _instance;
@@ -454,11 +455,14 @@ class EasyLoading {
         'while animationStyle is custom, customAnimation should not be null',
       );
     }
-
+    counter++;
     toastPosition ??= EasyLoadingToastPosition.center;
     bool animation = _w == null;
     _progressKey = null;
-    if (_key != null) await dismiss(animation: false);
+    if (_key != null) {
+      counter++;
+      await dismiss(animation: false);
+    }
 
     Completer<void> completer = Completer<void>();
     _key = GlobalKey<EasyLoadingContainerState>();
@@ -477,13 +481,13 @@ class EasyLoading {
       if (duration != null) {
         _cancelTimer();
         _timer = Timer(duration, () async {
+          counter++;
           await dismiss();
         });
       }
     });
     _markNeedsBuild();
 
-    counter++;
     return completer.future;
   }
 
@@ -491,7 +495,8 @@ class EasyLoading {
     counter--;
 
     if (counter > 0) return;
-    
+    counter = 0;
+
     if (key != null && key?.currentState == null) {
       _reset();
       return;
